@@ -12,8 +12,8 @@ createuser --no-superuser --no-createdb --no-createrole $USERNAME;
 createdb --owner=$USERNAME $DATABASE;
 createlang plpgsql $DATABASE;
 
-psql -f /usr/share/postgresql-8.3-postgis/lwpostgis.sql $DATABASE;
-psql -f /usr/share/postgresql-8.3-postgis/spatial_ref_sys.sql $DATABASE;
+psql -f lwpostgis.sql $DATABASE;
+psql -f spatial_ref_sys.sql $DATABASE;
 psql -f 900913.def $DATABASE;
 
 echo "ALTER TABLE geometry_columns OWNER TO $USERNAME;" | psql $DATABASE;
