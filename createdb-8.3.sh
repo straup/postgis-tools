@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# TO DO : check to see that we are the postgres user here
+# TO DO: (optional) password hooks
+
 if [ $# -ne 2 ]; then
         echo "Usage: $0 <user name> <database name>";
         exit;
