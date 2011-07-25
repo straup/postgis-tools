@@ -9,3 +9,8 @@ out by Postgres versions, specifical 8.3 and 8.4.
 
 Patches, cluebats, etc. are encouraged and welcomed. We all have better things
 to do be doing than this...
+
+Schuyler says:
+--
+
+	Do it once, then `createdb -Ttemplate_postgis my_postgis_db`
