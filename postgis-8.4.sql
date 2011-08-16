@@ -1,6 +1,6 @@
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 --
--- $Id: postgis.sql.in.c 5385 2010-03-09 00:22:41Z pramsey $
+-- $Id: postgis.sql.in.c 5876 2010-08-31 18:00:26Z nicklas $
 --
 -- PostGIS - Spatial Types for PostgreSQL
 -- http://postgis.refractions.net
@@ -42,7 +42,7 @@
 
 
 
--- INSTALL VERSION: 1.5.1
+-- INSTALL VERSION: 1.5.2
 
 SET client_min_messages TO warning;
 
@@ -3402,7 +3402,7 @@ CREATE OR REPLACE FUNCTION postgis_proj_version() RETURNS text
 -- Do not modify this w/out also changing postgis_proc_upgrade.pl
 --
 CREATE OR REPLACE FUNCTION postgis_scripts_installed() RETURNS text
-	AS 'SELECT ''1.5 r5385''::text AS version'
+	AS 'SELECT ''1.5 r5976''::text AS version'
 	LANGUAGE 'sql' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_lib_version() RETURNS text
@@ -3427,7 +3427,7 @@ CREATE OR REPLACE FUNCTION postgis_libxml_version() RETURNS text
 	LANGUAGE 'C' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_scripts_build_date() RETURNS text
-	AS 'SELECT ''2010-05-25 10:30:04''::text AS version'
+	AS 'SELECT ''2010-10-08 16:13:54''::text AS version'
 	LANGUAGE 'sql' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_lib_build_date() RETURNS text
@@ -4519,7 +4519,7 @@ CREATE OR REPLACE FUNCTION _ST_Equals(geometry,geometry)
 CREATE OR REPLACE FUNCTION ST_Equals(geometry,geometry)
 	RETURNS boolean
 	AS 'SELECT $1 && $2 AND _ST_Equals($1,$2)'
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE;
 
 
 -----------------------------------------------------------------------
@@ -6832,7 +6832,7 @@ CREATE OR REPLACE FUNCTION SE_LocateBetween(geometry, float8, float8)
 
 
 ---------------------------------------------------------------------------
--- $Id: geography.sql.in.c 5065 2009-12-30 01:25:17Z pramsey $
+-- $Id: geography.sql.in.c 5976 2010-09-18 18:01:17Z pramsey $
 --
 -- PostGIS - Spatial Types for PostgreSQL
 -- Copyright 2009 Paul Ramsey <pramsey@cleverelephant.ca>
@@ -6996,12 +6996,12 @@ CREATE OR REPLACE VIEW geography_columns AS
 		pg_attribute a, 
 		pg_type t, 
 		pg_namespace n
-	WHERE c.relkind IN('r','v')
-	AND t.typname = 'geography'
-	AND a.attisdropped = false
-	AND a.atttypid = t.oid
-	AND a.attrelid = c.oid
-	AND c.relnamespace = n.oid;
+	WHERE t.typname = 'geography'
+        AND a.attisdropped = false
+        AND a.atttypid = t.oid
+        AND a.attrelid = c.oid
+        AND c.relnamespace = n.oid
+        AND NOT pg_is_other_temp_schema(c.relnamespace);
 
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION geography(geometry)
@@ -7441,7 +7441,7 @@ CREATE OR REPLACE FUNCTION ST_DWithin(geography, geography, float8)
 CREATE OR REPLACE FUNCTION ST_DWithin(text, text, float8)
 	RETURNS boolean AS
 	$$ SELECT ST_DWithin($1::geometry, $2::geometry, $3);  $$
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE ;
 
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION ST_Area(geography, boolean)
@@ -7510,34 +7510,34 @@ CREATE OR REPLACE FUNCTION ST_Covers(geography, geography)
 CREATE OR REPLACE FUNCTION ST_Covers(text, text)
 	RETURNS boolean AS
 	$$ SELECT ST_Covers($1::geometry, $2::geometry);  $$
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE ;
 
 -- Only implemented for polygon-over-point
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION ST_CoveredBy(geography, geography)
 	RETURNS boolean
 	AS 'SELECT $1 && $2 AND _ST_Covers($2, $1)'
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE ;
 
 -- Availability: 1.5.0 - this is just a hack to prevent unknown from causing ambiguous name because of geography
 -- TODO Remove in 2.0
 CREATE OR REPLACE FUNCTION ST_CoveredBy(text, text)
 	RETURNS boolean AS
 	$$ SELECT ST_CoveredBy($1::geometry, $2::geometry);  $$
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE ;
 
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION ST_Intersects(geography, geography)
 	RETURNS boolean
 	AS 'SELECT $1 && $2 AND _ST_Distance($1, $2, 0.0, false) < 0.00001'
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE;
 
 -- Availability: 1.5.0 - this is just a hack to prevent unknown from causing ambiguous name because of geography
 -- TODO Remove in 2.0
 CREATE OR REPLACE FUNCTION ST_Intersects(text, text)
 	RETURNS boolean AS
 	$$ SELECT ST_Intersects($1::geometry, $2::geometry);  $$
-	LANGUAGE 'SQL' IMMUTABLE STRICT;
+	LANGUAGE 'SQL' IMMUTABLE ;
 
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION _ST_BestSRID(geography, geography)
