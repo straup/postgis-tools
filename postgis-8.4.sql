@@ -1,6 +1,6 @@
 -- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 --
--- $Id: postgis.sql.in.c 5876 2010-08-31 18:00:26Z nicklas $
+-- $Id: postgis.sql.in.c 7360 2011-06-10 16:55:53Z robe $
 --
 -- PostGIS - Spatial Types for PostgreSQL
 -- http://postgis.refractions.net
@@ -42,7 +42,7 @@
 
 
 
--- INSTALL VERSION: 1.5.2
+-- INSTALL VERSION: 1.5.3
 
 SET client_min_messages TO warning;
 
@@ -2033,7 +2033,7 @@ $$ LANGUAGE plpgsql;
 -- Availability: 1.5.0
 CREATE OR REPLACE FUNCTION ST_DumpPoints(geometry) RETURNS SETOF geometry_dump AS $$
   SELECT * FROM _ST_DumpPoints($1, NULL);
-$$ LANGUAGE SQL;
+$$ LANGUAGE SQL  STRICT;
 
 
 ------------------------------------------------------------------------
@@ -2481,9 +2481,9 @@ BEGIN
 	RAISE DEBUG 'Processing table %.%.%', gcs.nspname, gcs.relname, gcs.attname;
 
 	DELETE FROM geometry_columns
-	  WHERE f_table_schema = quote_ident(gcs.nspname)
-	  AND f_table_name = quote_ident(gcs.relname)
-	  AND f_geometry_column = quote_ident(gcs.attname);
+	  WHERE f_table_schema = gcs.nspname
+	  AND f_table_name = gcs.relname
+	  AND f_geometry_column = gcs.attname;
 
 	gc_is_valid := true;
 
@@ -2626,6 +2626,11 @@ BEGIN
 	LOOP
 		RAISE DEBUG 'Processing view %.%.%', gcs.nspname, gcs.relname, gcs.attname;
 
+	DELETE FROM geometry_columns
+	  WHERE f_table_schema = gcs.nspname
+	  AND f_table_name = gcs.relname
+	  AND f_geometry_column = gcs.attname;
+	  
 		EXECUTE 'SELECT ndims(' || quote_ident(gcs.attname) || ')
 				 FROM ' || quote_ident(gcs.nspname) || '.' || quote_ident(gcs.relname) || '
 				 WHERE ' || quote_ident(gcs.attname) || ' IS NOT NULL LIMIT 1'
@@ -3402,7 +3407,7 @@ CREATE OR REPLACE FUNCTION postgis_proj_version() RETURNS text
 -- Do not modify this w/out also changing postgis_proc_upgrade.pl
 --
 CREATE OR REPLACE FUNCTION postgis_scripts_installed() RETURNS text
-	AS 'SELECT ''1.5 r5976''::text AS version'
+	AS 'SELECT ''1.5 r7360''::text AS version'
 	LANGUAGE 'sql' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_lib_version() RETURNS text
@@ -3427,7 +3432,7 @@ CREATE OR REPLACE FUNCTION postgis_libxml_version() RETURNS text
 	LANGUAGE 'C' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_scripts_build_date() RETURNS text
-	AS 'SELECT ''2010-10-08 16:13:54''::text AS version'
+	AS 'SELECT ''2011-08-16 19:59:56''::text AS version'
 	LANGUAGE 'sql' IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION postgis_lib_build_date() RETURNS text
