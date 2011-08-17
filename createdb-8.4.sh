@@ -17,6 +17,7 @@ createlang plpgsql $DATABASE;
 
 psql -f postgis-8.4.sql $DATABASE;
 psql -f spatial_ref_sys-8.4.sql $DATABASE;
+psql -f postgis_comments.sql $DATABASE;
 
 # ensure intarray so that we can do OSM updates
 psql -f _int-8.4.sql $DATABASE;
